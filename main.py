@@ -1,13 +1,17 @@
 import datetime
 import os
+from fileinput import filename
 from time import sleep
 from win32_setctime import setctime
 import tkinter as tk
 import tkcalendar as tc
+from tkinter import filedialog as fd
 import openpyxl
 import calendar
 from babel.dates import format_date, parse_date, get_day_names, get_month_names
-from babel.numbers import *  # Additional Import```
+from babel.numbers import *
+
+filenamee = ''
 
 
 def change(filename, fileendname, author,
@@ -27,8 +31,9 @@ def change(filename, fileendname, author,
 
 
 def submit():
-    timeend = []
-    if author_e.get() and fileendname_e.get() and time.get_date() and min_sb.get() and sec_hour.get() and sec.get() and filename_e.get():
+    global filenamee
+    print(filenamee)
+    if author_e.get() and fileendname_e.get() and time.get_date() and min_sb.get() and sec_hour.get() and sec.get() and filename != '':
 
         timecreation = []
         temp = ''
@@ -45,12 +50,27 @@ def submit():
         print(fileendname_e.get())
         print(time.get_date())
 
-        change(filename_e.get(), fileendname_e.get() + ".xlsx", author_e.get(),
+        change(filenamee, fileendname_e.get() + ".xlsx", author_e.get(),
                datetime.datetime(year=2000 + timecreation[2], month=timecreation[0], day=timecreation[1],
                                  hour=int(min_sb.get()), minute=int(sec_hour.get()), second=int(sec.get())))
 
     else:
         label.configure(text="Не введены значения, или введены не все!")
+
+
+def select_file():
+    global filenamee
+    filetypes = (
+        ('xlsx', '*.xlsx'),
+    )
+
+    file = fd.askopenfilename(
+        title='Open a file',
+        initialdir='/',
+        filetypes=filetypes)
+    filenamee = file
+
+    open_button.configure(text=filenamee)
 
 
 window = tk.Tk()
@@ -62,30 +82,31 @@ label = tk.Label(
     height=3,
     width=50
 )
-filename = tk.Label(text="Имя файла (должен лежать в папке с программой, вводить с расширением)",
-                    bg="white",
-                    )
 
-inserttimetext = tk.Label(text="Время (Ч, М, С)",
-                    bg="white",
-                    )
-
-filename_e = tk.Entry(
-
-)
-fileendname = tk.Label(text="Имя выходного файла (без расширения)",
-                       bg="white",
-                       )
-fileendname_e = tk.Entry(
-
+inserttimetext = tk.Label(
+    text="Время (Ч, М, С)",
+    bg="white",
 )
 
-author = tk.Label(text="Автор",
-                  bg="white",
-                  )
-author_e = tk.Entry(
-
+open_button = tk.Button(
+    window,
+    text='Open a File',
+    command=select_file
 )
+
+fileendname = tk.Label(
+    text="Имя выходного файла (без расширения)",
+    bg="white",
+)
+
+fileendname_e = tk.Entry()
+
+author = tk.Label(
+    text="Автор",
+    bg="white",
+)
+
+author_e = tk.Entry()
 
 submit = tk.Button(
     text="Подтвердить!",
@@ -94,8 +115,7 @@ submit = tk.Button(
     command=submit
 )
 
-time = tc.Calendar(
-)
+time = tc.Calendar()
 
 fone = tk.Frame(window)
 ftwo = tk.Frame(window)
@@ -131,15 +151,14 @@ sec = tk.Spinbox(
     from_=0,
     to=59,
     wrap=True,
-    textvariable=sec_hour,
+
     width=2,
     font=f,
     justify=tk.CENTER
 )
 
 label.pack()
-filename.pack()
-filename_e.pack(pady=3)
+open_button.pack(pady=4)
 
 author.pack()
 author_e.pack()
@@ -152,9 +171,9 @@ min_sb.pack(side=tk.LEFT, fill=tk.X, expand=True)
 sec_hour.pack(side=tk.LEFT, fill=tk.X, expand=True)
 sec.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-
 fone.pack(pady=10)
 ftwo.pack(pady=10)
+
 inserttimetext.pack()
 submit.pack(pady=10)
 
